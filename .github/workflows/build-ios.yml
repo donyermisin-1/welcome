@@ -3,6 +3,9 @@ name: Build iOS app
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: macos-latest
@@ -23,8 +26,10 @@ jobs:
           cp -R "$APP_PATH" build/Payload/
           cd build
           zip -r HelloWelcomeToiOS-unsigned.ipa Payload
-      - name: Upload IPA
-        uses: actions/upload-artifact@v4
+      - name: Publish IPA as a direct download
+        uses: softprops/action-gh-release@v2
         with:
-          name: HelloWelcomeToiOS-unsigned-ipa
-          path: build/HelloWelcomeToiOS-unsigned.ipa
+          tag_name: ipa-build-${{ github.run_number }}
+          name: IPA build ${{ github.run_number }}
+          files: build/HelloWelcomeToiOS-unsigned.ipa
+          make_latest: true
